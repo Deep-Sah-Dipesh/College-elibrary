@@ -31,15 +31,11 @@
                     const container = document.getElementById('book-details');
                     
                     const previewBtn = book.previewUrl 
-                        ? `<a href="${book.previewUrl}" target="_blank" class="btn btn-outline"><i class="fas fa-book-reader"></i> Preview</a>` 
+                        ? `<button onclick="handlePreview('${book.previewUrl}')" class="btn btn-outline"><i class="fas fa-book-reader"></i> Preview</button>` 
                         : '';
                         
-                    // Added direct download buttons to the details page
                     const epubBtn = book.downloadUrl 
-                        ? `<a href="${book.downloadUrl}" target="_blank" class="btn"><i class="fas fa-download"></i> EPUB</a>` 
-                        : '';
-                    const pdfBtn = book.pdfUrl 
-                        ? `<a href="${book.pdfUrl}" target="_blank" class="btn"><i class="fas fa-file-pdf"></i> PDF</a>` 
+                        ? `<button onclick="handleDownload('${book.id}', '${book.downloadUrl}')" class="btn"><i class="fas fa-download"></i> Download Book</button>` 
                         : '';
 
                     container.innerHTML = `
@@ -54,7 +50,6 @@
                             <div class="button-group" style="margin-top: 2rem; flex-wrap: wrap;">
                                 <button onclick="handleAddToCart('${book.id}')" class="btn"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                                 ${epubBtn}
-                                ${pdfBtn}
                                 ${previewBtn}
                             </div>
                         </div>
