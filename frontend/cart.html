@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo"><i class="fas fa-book-open"></i> Ebooks Library</a>
+        <nav>
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count" class="cart-count">0</span></a>
+        </nav>
+    </header>
+
+    <main>
+        <h2><i class="fas fa-shopping-bag"></i> Your Digital Cart</h2>
+        
+        <div id="cart-actions" style="margin: 1.5rem 0; display: none; gap: 1rem;">
+            <button onclick="downloadAll('epub')" class="btn btn-outline"><i class="fas fa-layer-group"></i> Download All EPUBs</button>
+            <button onclick="downloadAll('pdf')" class="btn btn-outline"><i class="fas fa-layer-group"></i> Download All PDFs</button>
+        </div>
+
+        <div id="cart-list" class="cart-list"></div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const list = document.getElementById('cart-list');
+            const actions = document.getElementById('cart-actions');
+            list.innerHTML = '';
+            
+            if (cart.length === 0) {
+                actions.style.display = 'none';
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px;">
+                        <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <h3>Your cart is empty</h3>
+                        <p><a href="index.html" style="color: var(--secondary-color);">Browse catalog</a></p>
+                    </div>`;
+                return;
+            }
+            
+            actions.style.display = 'flex';
+            cart.forEach(item => {
+                const epubBtn = item.downloadUrl ? `<a href="${item.downloadUrl}" target="_blank" onclick="event.stopPropagation();" class="btn"><i class="fas fa-download"></i> EPUB</a>` : '';
+                const pdfBtn = item.pdfUrl ? `<a href="${item.pdfUrl}" target="_blank" onclick="event.stopPropagation();" class="btn"><i class="fas fa-file-pdf"></i> PDF</a>` : '';
+
+                list.innerHTML += `
+                    <div class="cart-item clickable-card" onclick="window.location.href='book.html?id=${item.id}'">
+                        <img src="${item.localImage}" onerror="this.onerror=null;this.src='${item.remoteImage}';" alt="${item.title}">
+                        <div class="cart-info">
+                            <h3>${item.title}</h3>
+                            <p>${item.author}</p>
+                            <p style="font-size: 0.8rem; color: var(--secondary-color); margin-top: 0.3rem;">${item.category}</p>
+                        </div>
+                        <div class="button-group" style="margin-top: 0; flex-wrap: wrap;">
+                            ${epubBtn}
+                            ${pdfBtn}
+                            <button onclick="event.stopPropagation(); removeFromCart('${item.id}')" class="btn remove-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadCart);
+    </script>
+</body>
+</html>

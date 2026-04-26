@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo"><i class="fas fa-book-open"></i> Campus Library</a>
+        <nav>
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count" class="cart-count">0</span></a>
+        </nav>
+    </header>
+
+    <main id="book-details" class="details-container"></main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('id');
+
+            fetch(`/api/books/${bookId}`)
+                .then(res => res.json())
+                .then(book => {
+                    globalBooks = [book]; 
+                    const container = document.getElementById('book-details');
+                    
+                    const previewBtn = book.previewUrl 
+                        ? `<a href="${book.previewUrl}" target="_blank" class="btn btn-outline"><i class="fas fa-book-reader"></i> Preview</a>` 
+                        : '';
+                        
+                    // Added direct download buttons to the details page
+                    const epubBtn = book.downloadUrl 
+                        ? `<a href="${book.downloadUrl}" target="_blank" class="btn"><i class="fas fa-download"></i> EPUB</a>` 
+                        : '';
+                    const pdfBtn = book.pdfUrl 
+                        ? `<a href="${book.pdfUrl}" target="_blank" class="btn"><i class="fas fa-file-pdf"></i> PDF</a>` 
+                        : '';
+
+                    container.innerHTML = `
+                        <img src="${book.localImage}" onerror="this.onerror=null;this.src='${book.remoteImage}';" alt="${book.title}">
+                        <div class="info">
+                            <h2>${book.title}</h2>
+                            <p><strong>Author:</strong> ${book.author}</p>
+                            <p><strong>Category:</strong> ${book.category}</p>
+                            <p><strong>Publication:</strong> ${book.publication} (${book.date})</p>
+                            <p style="margin-top: 1.5rem; line-height: 1.6;">${book.overview}</p>
+                            
+                            <div class="button-group" style="margin-top: 2rem; flex-wrap: wrap;">
+                                <button onclick="handleAddToCart('${book.id}')" class="btn"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                                ${epubBtn}
+                                ${pdfBtn}
+                                ${previewBtn}
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(() => {
+                    document.getElementById('book-details').innerHTML = "<h3>Book not found.</h3>";
+                });
+        });
+    </script>
+</body>
+</html>
